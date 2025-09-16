@@ -694,3 +694,41 @@ Executing in AVX2 mode!!
 [0000][PE] skip orientation RF
 [0000][PE] skip orientation RR
 [0000] 3. Calling kt_for - worker_sam
+	[0000][ M::mem_process_seqs] Processed 733820 reads in 230.576 CPU sec, 58.055 real sec
+[0000] Calling mem_process_seqs.., task: 3
+[0000] 1. Calling kt_for - worker_bwt
+[0000] read_chunk: 100000000, work_chunk_size: 100000191, nseq: 734296
+	[0000][ M::kt_pipeline] read 734296 sequences (100000191 bp)...
+[0000] 2. Calling kt_for - worker_aln
+[0000] Inferring insert size distribution of PE reads from data, l_pac: 2927599912, n: 733774
+[0000][PE] # candidate unique pairs for (FF, FR, RF, RR): (31, 151762, 127, 33)
+[0000][PE] analyzing insert size distribution for orientation FF...
+[0000][PE] (25, 50, 75) percentile: (553, 1289, 4646)
+[0000][PE] low and high boundaries for computing mean and std.dev: (1, 12832)
+[0000][PE] mean and std.dev: (2183.10, 1940.74)
+[0000][PE] low and high boundaries for proper pairs: (1, 16925)
+[0000][PE] analyzing insert size distribution for orientation FR...
+[0000][PE] (25, 50, 75) percentile: (341, 423, 519)
+[0000][PE] low and high boundaries for computing mean and std.dev: (1, 875)
+[0000][PE] mean and std.dev: (432.20, 134.78)
+[0000][PE] low and high boundaries for proper pairs: (1, 1053)
+[0000][PE] analyzing insert size distribution for orientation RF...
+[0000][PE] (25, 50, 75) percentile: (128, 1364, 3955)
+[0000][PE] low and high boundaries for computing mean and std.dev: (1, 11609)
+[0000][PE] mean and std.dev: (2465.68, 2805.88)
+[0000][PE] low and high boundaries for proper pairs: (1, 15436)
+[0000][PE] analyzing insert size distribution for orientation RR...
+[0000][PE] (25, 50, 75) percentile: (651, 1819, 4858)
+[0000][PE] low and high boundaries for computing mean and std.dev: (1, 13272)
+[0000][PE] mean and std.dev: (3210.33, 2921.99)
+[0000][PE] low and high boundaries for proper pairs: (1, 17479)
+[0000][PE] skip orientation FF
+[0000][PE] skip orientation RF
+[0000][PE] skip orientation RR
+[0000] 3. Calling kt_for - worker_sam
+	[0000][ M::mem_process_seqs] Processed 733774 reads in 227.377 CPU sec, 57.248 real sec
+[0000] Reallocating initial memory allocations!!
+[0000] Calling mem_process_seqs.., task: 4
+[0000] 1. Calling kt_for - worker_bwt
+[0000] read_chunk: 100000000, work_chunk_size: 77710763, nseq: 572498
+	[0000][ M::kt_pipeline] read 572498 sequences (77710763 bp)...
