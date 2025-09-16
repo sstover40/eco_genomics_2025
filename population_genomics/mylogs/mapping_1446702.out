@@ -602,3 +602,35 @@ Executing in AVX2 mode!!
 [0000] read_chunk: 100000000, work_chunk_size: 100000124, nseq: 732522
 	[0000][ M::kt_pipeline] read 732522 sequences (100000124 bp)...
 [0000] 2. Calling kt_for - worker_aln
+[0000] Inferring insert size distribution of PE reads from data, l_pac: 2927599912, n: 731792
+[0000][PE] # candidate unique pairs for (FF, FR, RF, RR): (30, 150670, 126, 25)
+[0000][PE] analyzing insert size distribution for orientation FF...
+[0000][PE] (25, 50, 75) percentile: (429, 1054, 2012)
+[0000][PE] low and high boundaries for computing mean and std.dev: (1, 5178)
+[0000][PE] mean and std.dev: (1516.86, 1481.93)
+[0000][PE] low and high boundaries for proper pairs: (1, 7445)
+[0000][PE] analyzing insert size distribution for orientation FR...
+[0000][PE] (25, 50, 75) percentile: (347, 432, 528)
+[0000][PE] low and high boundaries for computing mean and std.dev: (1, 890)
+[0000][PE] mean and std.dev: (440.51, 138.16)
+[0000][PE] low and high boundaries for proper pairs: (1, 1071)
+[0000][PE] analyzing insert size distribution for orientation RF...
+[0000][PE] (25, 50, 75) percentile: (218, 3065, 5233)
+[0000][PE] low and high boundaries for computing mean and std.dev: (1, 15263)
+[0000][PE] mean and std.dev: (3164.60, 2776.90)
+[0000][PE] low and high boundaries for proper pairs: (1, 20278)
+[0000][PE] analyzing insert size distribution for orientation RR...
+[0000][PE] (25, 50, 75) percentile: (280, 466, 4787)
+[0000][PE] low and high boundaries for computing mean and std.dev: (1, 13801)
+[0000][PE] mean and std.dev: (1925.88, 2582.42)
+[0000][PE] low and high boundaries for proper pairs: (1, 18308)
+[0000][PE] skip orientation FF
+[0000][PE] skip orientation RF
+[0000][PE] skip orientation RR
+[0000] 3. Calling kt_for - worker_sam
+	[0000][ M::mem_process_seqs] Processed 731792 reads in 228.445 CPU sec, 57.584 real sec
+[0000] Reallocating initial memory allocations!!
+[0000] Calling mem_process_seqs.., task: 1
+[0000] 1. Calling kt_for - worker_bwt
+[0000] read_chunk: 100000000, work_chunk_size: 100000220, nseq: 733820
+	[0000][ M::kt_pipeline] read 733820 sequences (100000220 bp)...
