@@ -1,4 +1,4 @@
-#!/bin/batch
+#!/bin/bash
 
 
 #---------  Slurm preamble, defines the job with #SBATCH statements
@@ -31,7 +31,7 @@
 
 # this file is a wrap for 2 separate bam processing files. We were having trouble getting the mapping file to work and were running out of time to run 2 more files  
 
-cd "/users/s/s/sstover/projects/eco_genomics_2025/population_genomics/myscripts"
+#should already be in "myscripts"
 
 bash process_bam.sh
 
