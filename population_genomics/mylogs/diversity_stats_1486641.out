@@ -1,0 +1,15 @@
+mkdir: cannot create directory ‘/users/s/s/sstover/projects/eco_genomics_2025/population_genomics/mydata/ANGSD’: File exists
+	-> angsd version: 0.935 (htslib: 1.19.1) build(Dec 18 2024 17:12:57)
+	-> angsd -b /users/s/s/sstover/projects/eco_genomics_2025/population_genomics/mydata/ANGSD/2505_bam.list -ref /gpfs1/cl/ecogen/pbio6800/PopulationGenomics/ref_genome/Pmariana1.0-genome_reduced.fa -anc /gpfs1/cl/ecogen/pbio6800/PopulationGenomics/ref_genome/Pmariana1.0-genome_reduced.fa -out /users/s/s/sstover/projects/eco_genomics_2025/population_genomics/mydata/ANGSD/2505_ALL -nThreads 10 -remove_bads 1 -C 50 -baq 1 -minMapQ 20 -minQ 20 -GL 2 -doSaf 1 -doCounts 1 -minInd 4 -setMinDepthInd 1 -setMaxDepthInd 40 -setMinDepth 10 -skipTriallelic 1 -doMajorMinor 4 
+	-> Inputtype is BAM/CRAM
+[multiReader] 8 samples in 8 input files
+	-> Reading fasta: /gpfs1/cl/ecogen/pbio6800/PopulationGenomics/ref_genome/Pmariana1.0-genome_reduced.fa
+	-> fastafile: '/gpfs1/cl/ecogen/pbio6800/PopulationGenomics/ref_genome/Pmariana1.0-genome_reduced.fa' doesn't exists, will exit
+mkdir: cannot create directory ‘/users/X/X/XXXX/projects/eco_genomics_2025/population_genomics/myresults/ANGSD’: No such file or directory
+mkdir: cannot create directory ‘/users/X/X/XXXX/projects/eco_genomics_2025/population_genomics/myresults/ANGSD/diversity’: No such file or directory
+ANGSD_doTheta.sh: line 28: /users/X/X/XXXX/projects/eco_genomics_2025/population_genomics/myresults/ANGSD/diversity/2505_ALL.sfs: No such file or directory
+	-> Problem opening file: '/users/X/X/XXXX/projects/eco_genomics_2025/population_genomics/mydata/ANGSD/2505_ALL.saf.idx'
+ thetaStat do_stat /users/X/X/XXXX/projects/eco_genomics_2025/population_genomics/mydata/ANGSD/2505_ALL.thetas.idx -win 50000 -step 50000 -outnames /users/X/X/XXXX/projects/eco_genomics_2025/population_genomics/myresults/ANGSD/diversity/2505_ALL_win50000_step50000.thetasWindow.gz
+	Assuming binfile:/users/X/X/XXXX/projects/eco_genomics_2025/population_genomics/mydata/ANGSD/2505_ALL.thetas.gz and indexfile:/users/X/X/XXXX/projects/eco_genomics_2025/population_genomics/mydata/ANGSD/2505_ALL.thetas.idx
+	-> Problems opening file: '/users/X/X/XXXX/projects/eco_genomics_2025/population_genomics/mydata/ANGSD/2505_ALL.thetas.idx'
+ANGSD_doTheta.sh: line 58: /users/X/X/XXXX/projects/eco_genomics_2025/population_genomics/myresults/ANGSD/diversity/2505_ALL_win50000_step50000.thetas: No such file or directory

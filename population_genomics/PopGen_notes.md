@@ -54,4 +54,19 @@ We were having problems running the mapping script (1) so we made a wrapper bash
 
 -   `/users/s/s/sstover/projects/eco_genomics_2025/population_genomics/myscripts/bam_process_stats_wrap.sh`
 
-need to run this before thursday!
+need to run this before thursday! -DONE 
+
+### 9/18/25: Review Bamstats and set up nucleotide diversity estimation using ANGSD
+
+wrote a short bam script called:
+
+* `/users/s/s/sstover/projects/eco_genomics_2025/population_genomics/myscripts/bamstats_review.r`
+
+saw roughly 66% of reads mapped onto the genome in proper pairs 
+obtained depth of coverage btwn 2-3x suggesting we should use low depth coverage analysis tools
+ex. ANGSD (takes probability into account)
+
+we wrote 3 scripts today to calculate nucleotide diversity using the program ANGSD
+
+
+
