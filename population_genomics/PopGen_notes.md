@@ -87,10 +87,33 @@ After fixing our ANGSD_doTheta.sh file (the last line was missing part of the in
 We first wrote a script to calculate Fst: 
 this used an input of black spruce data and my 2505 population of red spruce ANGSD data  
 * `/users/s/s/sstover/projects/eco_genomics_2025/population_genomics/myscripts/ANGSD_Fst.sh`
+my Fst was 0.22045
 
+Then, we ran PCAngsd using all samples (not just our population).
+Genotype liklihood outputs are found in: 
+* `/users/s/s/sstover/projects/eco_genomics_2025/population_genomics/myscripts/ANGSD_RSBS_poly.sh`
 
+We made a batch script called "PCAngsd_RSBS.sh", this script runs pcangsd using our genotype liklihoods, calculating eigen values for the PCA
+This is specific to ANGSD because it uses the GL in the beagle file to start and then iteratively relaxing the assumption that the indiv come 
+from the same populatons. The genotypes will depend on the structure of the population so it tries to cluster the indiv. based on the original 
+clustering, does this until it finds the clusters with the allele freq that are most like the orginal groups. WE tell it how many eigenvalues (K - clustering) 
+to use, K being the number of distinct ancestry groups. We used 2: Black spruce and red spruce 
+* `/users/s/s/sstover/projects/eco_genomics_2025/population_genomics/myscripts/PCAngsd.RSBS.sh`
+Once the run finished,the following files were outputs in `myresults/ANGSD/PCA_Admix/`
+* `RSBS_bam.list`
+* `RSBS_poly.cov`
+* `RSBS_poly.admix.2.Q`
 
+Finally  we made an RMarkdown document visualizing the red spruce-black spruce genetic PCAs and admixture analysis.
+* `/users/s/s/sstover/projects/eco_genomics_2025/population_genomics/PCA_Admix.Rmd`
 
-
-
+### 9/30/25: playing around with the clustering and eigenvalues
+we learned about how PCA axis are calculated and we changed the K or clustering groups to rerun the PCA. 
+The VACC made me wait in line for too long but I originally changed the K variable in my `PCAngsd_RSBS.sh' file to 3. 
+We also isolated the RS samples from the BS samples to re-plot the PCA without the black spruce samples to gage whether there was any introgression regions 
+under selection. 
+This is the new PCA script without Black spruce: 
+* `/users/s/s/sstover/projects/eco_genomics_2025/population_genomics/myscripts/PCAngsd_RSfilt.sh`
+This is the rmd file with the plots:
+* `/users/s/s/sstover/projects/eco_genomics_2025/population_genomics/mydocs/RS_Selection.Rmd`
 
