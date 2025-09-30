@@ -1,0 +1,5 @@
+mkdir: cannot create directory ‘/myresults/ANGSD/Fst’: No such file or directory
+/var/spool/slurm/d/job1590198/slurm_script: line 59: realSFS: command not found
+/var/spool/slurm/d/job1590198/slurm_script: line 65: realSFS: command not found
+/var/spool/slurm/d/job1590198/slurm_script: line 74: realSFS: command not found
+/var/spool/slurm/d/job1590198/slurm_script: line 80: realSFS: command not found

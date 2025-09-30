@@ -1,0 +1,4 @@
+/var/spool/slurm/d/job1590131/slurm_script: line 59: /myresults/ANGSD/Fst/2505_WISC_2D.sfs: No such file or directory
+/var/spool/slurm/d/job1590131/slurm_script: line 65: realSFS: command not found
+/var/spool/slurm/d/job1590131/slurm_script: line 74: /myresults/ANGSD/Fst/2505_WISC_Fst.txt: No such file or directory
+/var/spool/slurm/d/job1590131/slurm_script: line 80: /myresults/ANGSD/Fst/2505_WISC_Fst_50kbWindows.txt: No such file or directory

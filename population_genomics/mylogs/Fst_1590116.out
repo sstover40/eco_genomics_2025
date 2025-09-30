@@ -1,0 +1,9 @@
+/var/spool/slurm/d/job1590116/slurm_script: line 43: /users/s/s/sstover/projects/eco_genomics_2025/population_genomics: Is a directory
+mkdir: cannot create directory ‘/myresults/ANGSD/Fst’: No such file or directory
+/var/spool/slurm/d/job1590116/slurm_script: line 51: WISC: command not found
+/var/spool/slurm/d/job1590116/slurm_script: line 52: 2505: command not found
+/var/spool/slurm/d/job1590116/slurm_script: line 53: ALL: command not found
+/var/spool/slurm/d/job1590116/slurm_script: line 59: /myresults/ANGSD/Fst/__2D.sfs: No such file or directory
+/var/spool/slurm/d/job1590116/slurm_script: line 65: realSFS: command not found
+/var/spool/slurm/d/job1590116/slurm_script: line 74: /myresults/ANGSD/Fst/__Fst.txt: No such file or directory
+/var/spool/slurm/d/job1590116/slurm_script: line 80: /myresults/ANGSD/Fst/__Fst_50kbWindows.txt: No such file or directory

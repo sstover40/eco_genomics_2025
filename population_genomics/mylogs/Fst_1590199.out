@@ -1,0 +1,5 @@
+mkdir: cannot create directory ‘/users/s/s/sstover/projects/eco_genomics_2025/population_genomics/myresults/ANGSD/Fst’: File exists
+/var/spool/slurm/d/job1590199/slurm_script: line 59: realSFS: command not found
+/var/spool/slurm/d/job1590199/slurm_script: line 65: realSFS: command not found
+/var/spool/slurm/d/job1590199/slurm_script: line 74: realSFS: command not found
+/var/spool/slurm/d/job1590199/slurm_script: line 80: realSFS: command not found

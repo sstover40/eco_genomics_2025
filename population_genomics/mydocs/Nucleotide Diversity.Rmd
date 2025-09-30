@@ -1,0 +1,115 @@
+---
+title: "Nucleotide Diversity"
+author: "SES"
+date: "2025-09-23"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "~/projects/eco_genomics_2025/population_genomics/myresults/ANGSD/diversity")
+```
+
+1. Import our libraries for plotting 
+```{r}
+library(ggplot2)
+library(tidyverse)
+```
+2. read in our theta outputs 
+```{r} 
+theta <- read.table("2505_ALL_win50000_step50000.thetas", sep = "\t", header = T)
+
+head(theta)
+```
+the above table shows the diversity stats for each chromosome/scaffold, including the segregating sites (tW, "Wattersons theta), the pairwise differences (tP), and Tajima's D (Tajima). We want to scale the thetas by nSites 
+
+```{r}
+#Scaling Watterson's theta by nSites
+theta$tWsite = theta$tW/theta$nSites 
+
+#Scaling Pi by nSites
+theta$tPsite = theta$tP/theta$nSites 
+
+head(theta)
+```
+
+```{r}
+summary(theta)
+
+theta2 = theta %>% 
+  arrange(Chr, WinCenter) %>%
+  filter(Chr > 100)
+
+
+```
+Lets Plot a histogram of how many sites are in each window that got sequenced 
+
+```{r}
+ggplot(theta2, aes(nSites)) + 
+  geom_histogram(
+    bin = 50, 
+    fill = "lightblue", 
+    color = "black") + 
+  geom_vline(
+    xintercept = median(theta2$nSites), 
+    color="red", 
+    linetype = "dashed") + 
+  labs(
+    Title = "Distribution of Windows with data", 
+    x = "Number of sites with 50kb windows", 
+    y = "frequency")
+```
+```{r}
+ggplot(theta2, aes(x=Chr, y=tPsite, color=Chr)) +
+  geom_point(size=0.75,
+             shape=1, 
+             show.legend = F) +
+  ylim(0, 0.07) + 
+  labs(title = "Nucleotide diversity in 50kb for population 2505",
+       x = "Scaffold", 
+       y = "Theta-Pi")
+```
+```{r}
+#compare pi and thetaW together and look for deviation 
+
+ggplot(theta2, aes(x=tWsite, y=tPsite, color=Chr)) +
+  geom_point(
+    size = 0.75, 
+    shape = 1, 
+    show.legend = F) + 
+  geom_abline(
+    slope=1, 
+    intercept = 0,
+    lintetype = "dashed", 
+    color = "black") +
+  labs(
+    title = "Pairwise differences vs. segregating sites for population 2505", 
+    x = "ThetaW", 
+    y = "Theta Pi")
+```
+slight shift towards Theta Pi, positive D so evidence. But which windows have evidence of negative D (selective sweep) and low nucleotide diversity? 
+
+```{r}
+#subsetting rows that are evidence of selective sweep
+theta2[which(theta2$Tajima < -1.5 & theta2$tPsite < 0.001),]
+
+summary(theta2)
+sum(theta2$nSites)
+```
+
+Pulling out Extremes: 
+```{r}
+maxD = max(theta2$Tajima)
+BigD = theta2[which(theta2$Tajima==maxD),]
+BigD$Chr
+
+minD = min(theta2$Tajima)
+lilD = theta2[which(theta2$Tajima==minD),]
+lilD$Chr
+```
+
+
+
+```
+
+
