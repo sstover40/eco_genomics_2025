@@ -113,5 +113,28 @@ plot(-log10(pval_PC1$p_PC1), col="black", cex=0.8, xlab="Locus position", main="
 
 plot(-log10(pval_PC2$p_PC2), col="red", cex=0.8, xlab="Locus position", main="Selection outliers: PCAngsd PC2")
 ```
+We can zoom in if there is something near a position: 
+```{r}
+plot(-log10(pval$p_PC1[2e05:2.01e05]),
+  col=p_filtered$chromo, 
+  xlab="Position", 
+  ylab="-log10(p-value)", 
+  main="Selection outliers: pcANGSD e=1 (K2)")
+
+# get the contig with the lowest p-value for selection
+sel_contig <- p_filtered[which(pval==min(pval$p_PC1)),c("chromo","position")]
+sel_contig
+
+# get all the outliers with p-values below some cutoff
+cutoff=1e-3   # equals a 1 in 5,000 probability
+outlier_contigs <- p_filtered[which(pval<cutoff),c("chromo","position")]
+outlier_contigs
+
+# how many outlier loci < the cutoff?
+dim(outlier_contigs)[1]
+
+# how many unique contigs harbor outlier loci?
+length(unique(outlier_contigs$chromo))
+```
 
 
