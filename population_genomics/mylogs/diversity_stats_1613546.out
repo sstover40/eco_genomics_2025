@@ -1,0 +1,23 @@
+mkdir: cannot create directory ‘/users/s/s/sstover/projects/eco_genomics_2025/population_genomics/myresults/ANGSD’: File exists
+mkdir: cannot create directory ‘/users/s/s/sstover/projects/eco_genomics_2025/population_genomics/myresults/ANGSD/diversity’: File exists
+	-> Version of fname:/users/s/s/sstover/projects/eco_genomics_2025/population_genomics/mydata/ANGSD/_ALL.saf.idx is:2
+	-> Assuming .saf.gz file: /users/s/s/sstover/projects/eco_genomics_2025/population_genomics/mydata/ANGSD/_ALL.saf.gz
+	-> Assuming .saf.pos.gz: /users/s/s/sstover/projects/eco_genomics_2025/population_genomics/mydata/ANGSD/_ALL.saf.pos.gz
+	-> args: tole:0.000001 nthreads:1 maxiter:1000 nsites:0 start:(null) chr:(null) start:-1 stop:-1 fstout:(null) oldout:0 seed:-1 bootstrap:0 resample_chr:0 whichFst:0 fold:0 ref:(null) anc:(null)
+	-> generating offset remapper lookup
+	-> isSame:1 adjusting foldfactors
+	-> nSites: 108842403
+	-> The choice of -nSites will require atleast: 95080.984375 megabyte memory, that is at least: 6.15% of total memory
+ANGSD_doTheta.sh: line 32: 2679659 Killed                  realSFS ${INPUT}/${MYPOP}_${SUFFIX}.saf.idx -maxIter 1000 -tole 1e-6 -P 1 > ${OUT}/${MYPOP}_${SUFFIX}.sfs
+	-> Version of fname:/users/s/s/sstover/projects/eco_genomics_2025/population_genomics/mydata/ANGSD/_ALL.saf.idx is:2
+	-> Assuming .saf.gz file: /users/s/s/sstover/projects/eco_genomics_2025/population_genomics/mydata/ANGSD/_ALL.saf.gz
+	-> Assuming .saf.pos.gz: /users/s/s/sstover/projects/eco_genomics_2025/population_genomics/mydata/ANGSD/_ALL.saf.pos.gz
+	-> args: tole:0.000000 nthreads:4 maxiter:100 nsites:0 start:/users/s/s/sstover/projects/eco_genomics_2025/population_genomics/myresults/ANGSD/diversity/_ALL.sfs chr:(null) start:-1 stop:-1 fstout:/users/s/s/sstover/projects/eco_genomics_2025/population_genomics/mydata/ANGSD/_ALL oldout:0 seed:-1 bootstrap:0 resample_chr:0 whichFst:0 fold:0 ref:(null) anc:(null)
+	-> Will read chunks of size: 4096
+	-> Reading: /users/s/s/sstover/projects/eco_genomics_2025/population_genomics/myresults/ANGSD/diversity/_ALL.sfs assuming counts (will normalize to probs internally)
+File:/users/s/s/sstover/projects/eco_genomics_2025/population_genomics/myresults/ANGSD/diversity/_ALL.sfs looks empty
+ thetaStat do_stat /users/s/s/sstover/projects/eco_genomics_2025/population_genomics/mydata/ANGSD/_ALL.thetas.idx -win 50000 -step 50000 -outnames /users/s/s/sstover/projects/eco_genomics_2025/population_genomics/myresults/ANGSD/diversity/_ALL_win50000_step50000.thetasWindow.gz
+	Assuming binfile:/users/s/s/sstover/projects/eco_genomics_2025/population_genomics/mydata/ANGSD/_ALL.thetas.gz and indexfile:/users/s/s/sstover/projects/eco_genomics_2025/population_genomics/mydata/ANGSD/_ALL.thetas.idx
+	-> Problems opening file: '/users/s/s/sstover/projects/eco_genomics_2025/population_genomics/mydata/ANGSD/_ALL.thetas.idx'
+cut: /users/s/s/sstover/projects/eco_genomics_2025/population_genomics/myresults/ANGSD/diversity/_ALL_win50000_step50000.thetasWindow.gz.pestPG: No such file or directory
+[2025-10-06T15:19:25.719] error: Detected 1 oom_kill event in StepId=1613546.batch. Some of the step tasks have been OOM Killed.

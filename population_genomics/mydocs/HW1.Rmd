@@ -1,0 +1,77 @@
+---
+title: "HW1"
+author: "SES"
+date: "2025-09-23"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "~/projects/eco_genomics_2025/population_genomics")
+```
+
+1. Import our libraries for plotting 
+```{r}
+library(ggplot2)
+library(tidyverse)
+```
+2. Exploring Nucleotide diversity:
+```{r} 
+setwd("myresults/ANGSD/diversity")
+
+theta <- read.table("_ALL_win50000_step50000.thetas", sep = "\t", header = T)
+
+head(theta)
+#Scaling Watterson's theta by nSites
+theta$tWsite = theta$tW/theta$nSites 
+
+#Scaling Pi by nSites
+theta$tPsite = theta$tP/theta$nSites 
+
+#check!
+head(theta)
+summary(theta)
+
+#rearrange theta table 
+theta2 = theta %>% 
+  arrange(Chr, WinCenter) %>%
+  filter(Chr > 100)
+
+#compare pi and thetaW together and look for deviation 
+
+ggplot(theta2, aes(x=tWsite, y=tPsite, color=Chr)) +
+  geom_point(
+    size = 0.75, 
+    shape = 1, 
+    show.legend = F) + 
+  geom_abline(
+    slope=1, 
+    intercept = 0,
+    lintetype = "dashed", 
+    color = "black") +
+  labs(
+    title = "Pairwise differences vs. segregating sites for population 2505", 
+    x = "ThetaW", 
+    y = "Theta Pi")
+
+#subsetting rows that are evidence of selective sweep
+theta2[which(theta2$Tajima < -1.5 & theta2$tPsite < 0.001),]
+
+summary(theta2)
+sum(theta2$nSites)
+
+#pulling out the extremes
+maxD = max(theta2$Tajima)
+BigD = theta2[which(theta2$Tajima==maxD),]
+BigD$Chr
+
+minD = min(theta2$Tajima)
+lilD = theta2[which(theta2$Tajima==minD),]
+lilD$Chr
+```
+
+3. Exploring Selection: 
+```{r}
+setwd("myresults/ANGSD/")
+```
+

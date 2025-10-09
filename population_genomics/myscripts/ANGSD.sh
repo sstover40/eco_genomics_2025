@@ -17,7 +17,7 @@ OUT="/users/s/s/sstover/projects/eco_genomics_2025/population_genomics/mydata/AN
 
 REF="/gpfs1/cl/ecogen/pbio6800/PopulationGenomics/ref_genome/Pmariana/Pmariana1.0-genome_reduced.fa"
 
-MYPOP="2505"
+MYPOP=""
 
 ls ${INPUT}/${MYPOP}*sorted.rmdup.bam >${OUT}/${MYPOP}_bam.list
 

@@ -20,7 +20,7 @@ OUT="${REPO}/myresults/ANGSD/diversity"
 
 REF="/gpfs1/cl/ecogen/pbio6800/PopulationGenomics/ref_genome/Pmariana/Pmariana1.0-genome_reduced.fa"
 
-MYPOP="2505"
+MYPOP=""
 
 SUFFIX="ALL"   # All sites (=ALL) or just polymorphic sites (=POLY)?
 

@@ -21,7 +21,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=10
-#SBATCH --mem=64G
+#SBATCH --mem=120G
 
 # Time limit is expressed as days-hrs:min:sec; this is for 24 hours.
 #SBATCH --time=24:00:00
@@ -30,7 +30,7 @@
 
 cd /users/s/s/sstover/projects/eco_genomics_2025/population_genomics/myscripts
 
-bash ANGSD.sh
+#bash ANGSD.sh
 
 bash ANGSD_doTheta.sh
 
