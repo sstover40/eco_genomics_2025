@@ -1,0 +1,72 @@
+salmon 1.10.2
+Starting Salmon quantification at: Thu Oct  9 05:21:22 PM EDT 2025
+Running on node: node325.cluster
+Starting sample C2R1_S157_L007
+Version Server Response: Not Found
+### salmon (selective-alignment-based) v1.10.2
+### [ program ] => salmon 
+### [ command ] => quant 
+### [ index ] => { /gpfs1/cl/ecogen/pbio6800/Transcriptomics/reference/salmon_index }
+### [ libType ] => { A }
+### [ mates1 ] => { C2R1_S157_L007_R1_cleanNP_001.fastq.gz }
+### [ mates2 ] => { /gpfs1/cl/ecogen/pbio6800/Transcriptomics/cleandata/C2R1_S157_L007_R2_cleanNP_001.fastq.gz }
+### [ threads ] => { 8 }
+### [ softclip ] => { }
+### [ seqBias ] => { }
+### [ gcBias ] => { }
+### [ output ] => { /gpfs1/cl/ecogen/pbio6800/Transcriptomics/transcripts_quant/C2R1_S157_L007 }
+Logs will be written to /gpfs1/cl/ecogen/pbio6800/Transcriptomics/transcripts_quant/C2R1_S157_L007/logs
+logger failed with : [Failed opening file /gpfs1/cl/ecogen/pbio6800/Transcriptomics/transcripts_quant/C2R1_S157_L007/logs/salmon_quant.log for writing: Permission denied]. Exiting.
+Sample C2R1_S157_L007 done
+Starting sample C2R1_S157_L007
+Version Server Response: Not Found
+### salmon (selective-alignment-based) v1.10.2
+### [ program ] => salmon 
+### [ command ] => quant 
+### [ index ] => { /gpfs1/cl/ecogen/pbio6800/Transcriptomics/reference/salmon_index }
+### [ libType ] => { A }
+### [ mates1 ] => { C2R1_S157_L007_R1_cleanSS_001.fastq.gz }
+### [ mates2 ] => { /gpfs1/cl/ecogen/pbio6800/Transcriptomics/cleandata/C2R1_S157_L007_R2_cleanSS_001.fastq.gz }
+### [ threads ] => { 8 }
+### [ softclip ] => { }
+### [ seqBias ] => { }
+### [ gcBias ] => { }
+### [ output ] => { /gpfs1/cl/ecogen/pbio6800/Transcriptomics/transcripts_quant/C2R1_S157_L007 }
+Logs will be written to /gpfs1/cl/ecogen/pbio6800/Transcriptomics/transcripts_quant/C2R1_S157_L007/logs
+logger failed with : [Failed opening file /gpfs1/cl/ecogen/pbio6800/Transcriptomics/transcripts_quant/C2R1_S157_L007/logs/salmon_quant.log for writing: Permission denied]. Exiting.
+Sample C2R1_S157_L007 done
+Starting sample C2R2_S158_L007
+Version Server Response: Not Found
+### salmon (selective-alignment-based) v1.10.2
+### [ program ] => salmon 
+### [ command ] => quant 
+### [ index ] => { /gpfs1/cl/ecogen/pbio6800/Transcriptomics/reference/salmon_index }
+### [ libType ] => { A }
+### [ mates1 ] => { C2R2_S158_L007_R1_cleanNP_001.fastq.gz }
+### [ mates2 ] => { /gpfs1/cl/ecogen/pbio6800/Transcriptomics/cleandata/C2R2_S158_L007_R2_cleanNP_001.fastq.gz }
+### [ threads ] => { 8 }
+### [ softclip ] => { }
+### [ seqBias ] => { }
+### [ gcBias ] => { }
+### [ output ] => { /gpfs1/cl/ecogen/pbio6800/Transcriptomics/transcripts_quant/C2R2_S158_L007 }
+Logs will be written to /gpfs1/cl/ecogen/pbio6800/Transcriptomics/transcripts_quant/C2R2_S158_L007/logs
+logger failed with : [Failed opening file /gpfs1/cl/ecogen/pbio6800/Transcriptomics/transcripts_quant/C2R2_S158_L007/logs/salmon_quant.log for writing: Permission denied]. Exiting.
+Sample C2R2_S158_L007 done
+Starting sample C2R2_S158_L007
+Version Server Response: Not Found
+### salmon (selective-alignment-based) v1.10.2
+### [ program ] => salmon 
+### [ command ] => quant 
+### [ index ] => { /gpfs1/cl/ecogen/pbio6800/Transcriptomics/reference/salmon_index }
+### [ libType ] => { A }
+### [ mates1 ] => { C2R2_S158_L007_R1_cleanSS_001.fastq.gz }
+### [ mates2 ] => { /gpfs1/cl/ecogen/pbio6800/Transcriptomics/cleandata/C2R2_S158_L007_R2_cleanSS_001.fastq.gz }
+### [ threads ] => { 8 }
+### [ softclip ] => { }
+### [ seqBias ] => { }
+### [ gcBias ] => { }
+### [ output ] => { /gpfs1/cl/ecogen/pbio6800/Transcriptomics/transcripts_quant/C2R2_S158_L007 }
+Logs will be written to /gpfs1/cl/ecogen/pbio6800/Transcriptomics/transcripts_quant/C2R2_S158_L007/logs
+logger failed with : [Failed opening file /gpfs1/cl/ecogen/pbio6800/Transcriptomics/transcripts_quant/C2R2_S158_L007/logs/salmon_quant.log for writing: Permission denied]. Exiting.
+Sample C2R2_S158_L007 done
+Salmon quantification completed at: Thu Oct  9 05:21:22 PM EDT 2025

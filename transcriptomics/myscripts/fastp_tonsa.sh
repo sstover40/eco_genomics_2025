@@ -37,8 +37,8 @@ READ2=${READ1/_R1*.gz/_R2*gz}
 
 # make the output file names: print the fastq name, replace _# with _#_clean
 
-NAME1=$(echo $READ1 | sed "s/_R1/_R1_clean_/g")
-NAME2=$(echo $READ2 | sed "s/_R2/_R2_clean/g")
+NAME1=$(echo $READ1 | sed "s/_R1/_R1_cleanSS/g")
+NAME2=$(echo $READ2 | sed "s/_R2/_R2_cleanSS/g")
 
 # print the input and output to screen 
 
@@ -54,6 +54,6 @@ fastp -i ${READ1} -I ${READ2} -o /gpfs1/cl/ecogen/pbio6800/Transcriptomics/clean
 --cut_window_size 6 \
 --qualified_quality_phred 20 \
 --length_required 35 \
---html ~/myresults/fastqc/${NAME1}.html
+--html ${MYREPO}/myresults/fastp_reports/${NAME1}.html
 
 done

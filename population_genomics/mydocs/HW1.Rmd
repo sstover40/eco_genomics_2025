@@ -15,7 +15,7 @@ knitr::opts_knit$set(root.dir = "~/projects/eco_genomics_2025/population_genomic
 library(ggplot2)
 library(tidyverse)
 ```
-2. Exploring Nucleotide diversity:
+2.Nucleotide diversity: Tajima's D and Pi
 ```{r} 
 setwd("myresults/ANGSD/diversity")
 
@@ -70,8 +70,16 @@ lilD = theta2[which(theta2$Tajima==minD),]
 lilD$Chr
 ```
 
-3. Exploring Selection: 
+3. Using PCA to find selection signatures 
 ```{r}
-setwd("myresults/ANGSD/")
+setwd("myresults/ANGSD/PCA_ADMIX")
+
+COV <- as.matrix(read.table("RSBS_poly_K2.cov")) # read in the genetic covariance matrix
+
+PCA <- eigen(COV) # extract the principal components from the COV matrix
+
+
+
+
 ```
 
