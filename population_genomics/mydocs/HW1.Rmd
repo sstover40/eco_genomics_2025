@@ -12,8 +12,12 @@ knitr::opts_knit$set(root.dir = "~/projects/eco_genomics_2025/population_genomic
 
 1. Import our libraries for plotting 
 ```{r}
-library(ggplot2)
+#load plotting libraries 
 library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(ggpubr)
+library(qqman)
 ```
 2.Using Nucleotide diversity to find selection signatures
 ```{r} 
@@ -49,12 +53,6 @@ sum(theta2$nSites)
 
 3. Using PCA to find selection signatures 
 ```{r}
-#load plotting libraries 
-library(tidyverse)
-library(ggplot2)
-library(ggpubr)
-library(qqman)
-
 setwd("myresults/ANGSD/PCA_ADMIX")
 
 #making the PCA with just the Red Spruce 
@@ -95,10 +93,20 @@ dim(pos_filtered)
 4. comparing significant values of the PC axis with Tajima's D and Pi 
 ```{r}
 #evidence of selective sweep (Taijima's D and Pi)
+
+#Checking colnames of tajima'sD and Pi (Theta2 table)
 TDPi=theta2
 colnames(TDPi)
+
+#checking colnames of PC axis selection signatures
 PCaxis=MAF_all_sites
+#colnames(PCaxis)
+PCaxis <- rename(PCaxis, Chr=chromo)
 colnames(PCaxis)
+
+#overlap of sites in both 
+common_IDs <- intersect(TDPi$Chr, PCaxis$Chr)
+head(common_IDs)
 
 
   
