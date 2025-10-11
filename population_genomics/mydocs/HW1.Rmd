@@ -17,6 +17,7 @@ library(tidyverse)
 library(ggplot2)
 library(dplyr)
 library(ggVennDiagram)
+library(viridisLite)
 library(ggpubr)
 library(qqman)
 ```
@@ -95,40 +96,24 @@ dim(pos_filtered)
 
 loci_pvals = cbind(pos_filtered, pval_PC1, pval_PC2)
 
-# get the contig with the lowest p-value for selection
-loci_pvals %>%
-  filter(p_PC1==min(p_PC1)) %>%
-  select(chromo,position)
 
 # get all the outliers with p-values below some cutoff
 cutoff=1e-3   # equals p<0.001
 
+#table of selection outliers for each axis including the contig, snp position, and p_values 
 outliers_PC1 <- loci_pvals %>%
                     filter(p_PC1<cutoff) %>%
-                    select(chromo,position)
+                    select(chromo,position,p_PC1,p_PC2)
                     
 outliers_PC2 <- loci_pvals %>%
                     filter(p_PC2<cutoff) %>%
-                    select(chromo,position)
+                    select(chromo,position,p_PC1,p_PC2)
 
 
 # how many outlier loci < the cutoff?
 dim(outliers_PC1)[1]
 
 dim(outliers_PC2)[1]
-
-write.table(outliers_PC1,
-            "~/projects/eco_genomics_2025/population_genomics/mydata/ANGSD/outliers_PC1_RS",
-            quote=F,
-            row.names=F,
-            sep="\t")
-
-
-write.table(outliers_PC2,
-            "~/projects/eco_genomics_2025/population_genomics/mydata/ANGSD/outliers_PC1_RS",
-            quote=F,
-            row.names=F,
-            sep="\t")
 
 # how many unique contigs harbor outlier loci?
 outlier_contigs_PC1 = unique(outliers_PC1$chromo)
@@ -139,25 +124,60 @@ outlier_contigs_PC2 = unique(outliers_PC2$chromo)
 
 length(outlier_contigs_PC2)
 ```
-4. comparing significant values of the PC axis with Tajima's D and Pi 
+4. comparing significant values of the PCA outlier contigs with Tajima's D and Pi 
 ```{r}
 #Checking colnames of tajima'sD and Pi (theta2 table) selection signatures
 colnames(theta2)
 
 #need to rename Chromo to Chr in the PCA outliers table to be able to compare the 3 tables 
 #PC1
-#outliers_PC1 <- rename(outliers_PC1, Chr=chromo)
+outliers_PC1 <- rename(outliers_PC1, Chr=chromo)
 #PC2
-#outliers_PC2 <- rename(outliers_PC2, Chr=chromo)
+outliers_PC2 <- rename(outliers_PC2, Chr=chromo)
 
-#Venn diagram of overlap of contigs in all 3 tables
+##OVERLAP OF CONTIGS WITH SELECTION SIGNTURES (Venn Diagram)
 venn_data <- list( 
-  TajimaD_Pi = theta2$Chr, 
-  PC1_outliers = outliers_PC1$Chr, 
-  PC2_outliers = outliers_PC2$Chr)
+  "TajimaD and Pi" = theta2$Chr, 
+  "PC1 outliers" = outlier_contigs_PC1, 
+  "PC2 outliers" = outlier_contigs_PC2)
 
-ggVennDiagram(venn_data) + 
-  ggtitle("Overlap of Contigs with Selection Signatures")
-  
+ggVennDiagram(venn_data, label_alpha = 0.5, label="count") +
+  scale_fill_viridis_c(option = "C") +
+  theme(
+    legend.position = "none",
+    venn.setLabel = element_text(size = 12, color = "black"),
+    plot.title = element_text(hjust = 0.5, size = 16, face = "bold")
+  )
 ```
+
+5. determine areas of selection across the genome 
+```{r}
+#SNPS with Selection signatures
+
+#combining the PC1 and PC2 outliers tables, getting rid of overlaps  
+all_snps <- unique(rbind(outliers_PC1, outliers_PC2))
+
+# Create labels for plotting
+all_snps$SNP_status <- ifelse((all_snps$p_PC1<0.001) & (all_snps$p_PC2<0.001), "Both",
+                       ifelse(all_snps$p_PC1<0.001, "PC1_only",
+                       ifelse(all_snps$p_PC2<0.001, "PC2_only", "None")))
+
+# Calculate -log10(p-value) from either axis (choose one for y-axis)
+all_snps$logp <- -log10(pmin(all_snps$p_PC1, all_snps$p_PC2, na.rm = TRUE))
+
+ggplot(all_snps, aes(x = position, y = logp, color = SNP_status)) +
+  geom_point(alpha = 0.7) +
+  facet_wrap(~ Chr, scales = "free_x") +
+  scale_color_manual(values = c("PC1_only" = "blue", "PC2_only" = "black", "Both" = "red")) +
+  labs(title = "SNP-level Selection across the genome",
+       x = "Genomic Position",
+       y = "-log10(p-value)",
+       color = "SNP Origin") +
+  theme_bw()
+
+
+```
+```{r}
+#areas of selection (including overlap with Tajima's D and Pi)
+
 
