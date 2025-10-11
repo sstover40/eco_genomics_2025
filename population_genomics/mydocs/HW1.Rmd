@@ -165,18 +165,44 @@ all_snps$SNP_status <- ifelse((all_snps$p_PC1<0.001) & (all_snps$p_PC2<0.001), "
 # Calculate -log10(p-value) from either axis (choose one for y-axis)
 all_snps$logp <- -log10(pmin(all_snps$p_PC1, all_snps$p_PC2, na.rm = TRUE))
 
-ggplot(all_snps, aes(x = position, y = logp, color = SNP_status)) +
+#-------Making Chr and SNP positions into Genomic Positions-------------------------------
+
+# 1. Make sure 'Chr' is in the correct order 
+all_snps <- all_snps %>%
+  mutate(Chr = factor(Chr, levels = unique(Chr)))
+
+# 2. Calc max position for each chromosome
+chrom_sizes <- all_snps %>%
+  group_by(Chr) %>%
+  summarise(max_pos = max(position)) %>%
+  arrange(Chr)
+
+# 3. Calculate cumulative lengths
+chrom_sizes <- chrom_sizes %>%
+  mutate(cum_len = cumsum(lag(max_pos, default = 0)))
+
+# 4. Join cumulative lengths back to data
+all_snps <- all_snps %>%
+  left_join(chrom_sizes %>% select(Chr, cum_len), by = "Chr") %>%
+  mutate(genomic_pos = position + cum_len)
+#-----------------------------------------------------------------------------------------
+
+#ordering the SNPs in "Both" last
+all_snps <- all_snps %>%
+  arrange(SNP_status != "Both")  # This puts "Both" rows at the end
+
+ggplot(all_snps, aes(x = genomic_pos, y = logp, color = SNP_status)) +
   geom_point(alpha = 0.7) +
-  facet_wrap(~ Chr, scales = "free_x") +
-  scale_color_manual(values = c("PC1_only" = "blue", "PC2_only" = "black", "Both" = "red")) +
-  labs(title = "SNP-level Selection across the genome",
-       x = "Genomic Position",
+  scale_color_manual(values = c("PC1_only" = "blue", "PC2_only" = "black", "Both" = "red"),
+                     labels = c("PC1_only" = "PC1 only", "PC2_only" = "PC2 only", "Both" = "Both")) +
+  labs(x = "Genomic Position",
        y = "-log10(p-value)",
        color = "SNP Origin") +
+  
   theme_bw()
 
-
 ```
+
 ```{r}
 #areas of selection (including overlap with Tajima's D and Pi)
 
