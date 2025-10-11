@@ -16,6 +16,7 @@ knitr::opts_knit$set(root.dir = "~/projects/eco_genomics_2025/population_genomic
 library(tidyverse)
 library(ggplot2)
 library(dplyr)
+library(ggVennDiagram)
 library(ggpubr)
 library(qqman)
 ```
@@ -89,27 +90,74 @@ MAF_all_sites <- read.table("/gpfs1/cl/ecogen/pbio6800/PopulationGenomics/ANGSD/
 pos_filtered <- cbind(MAF_all_sites,PCAngsd_sites)[which(PCAngsd_sites==1),]
 
 dim(pos_filtered)
+
+# Combine the locus info with the PC outlier p-values:
+
+loci_pvals = cbind(pos_filtered, pval_PC1, pval_PC2)
+
+# get the contig with the lowest p-value for selection
+loci_pvals %>%
+  filter(p_PC1==min(p_PC1)) %>%
+  select(chromo,position)
+
+# get all the outliers with p-values below some cutoff
+cutoff=1e-3   # equals p<0.001
+
+outliers_PC1 <- loci_pvals %>%
+                    filter(p_PC1<cutoff) %>%
+                    select(chromo,position)
+                    
+outliers_PC2 <- loci_pvals %>%
+                    filter(p_PC2<cutoff) %>%
+                    select(chromo,position)
+
+
+# how many outlier loci < the cutoff?
+dim(outliers_PC1)[1]
+
+dim(outliers_PC2)[1]
+
+write.table(outliers_PC1,
+            "~/projects/eco_genomics_2025/population_genomics/mydata/ANGSD/outliers_PC1_RS",
+            quote=F,
+            row.names=F,
+            sep="\t")
+
+
+write.table(outliers_PC2,
+            "~/projects/eco_genomics_2025/population_genomics/mydata/ANGSD/outliers_PC1_RS",
+            quote=F,
+            row.names=F,
+            sep="\t")
+
+# how many unique contigs harbor outlier loci?
+outlier_contigs_PC1 = unique(outliers_PC1$chromo)
+
+length(outlier_contigs_PC1)
+
+outlier_contigs_PC2 = unique(outliers_PC2$chromo)
+
+length(outlier_contigs_PC2)
 ```
 4. comparing significant values of the PC axis with Tajima's D and Pi 
 ```{r}
-#evidence of selective sweep (Taijima's D and Pi)
+#Checking colnames of tajima'sD and Pi (theta2 table) selection signatures
+colnames(theta2)
 
-#Checking colnames of tajima'sD and Pi (Theta2 table)
-TDPi=theta2
-colnames(TDPi)
+#need to rename Chromo to Chr in the PCA outliers table to be able to compare the 3 tables 
+#PC1
+#outliers_PC1 <- rename(outliers_PC1, Chr=chromo)
+#PC2
+#outliers_PC2 <- rename(outliers_PC2, Chr=chromo)
 
-#checking colnames of PC axis selection signatures
-PCaxis=MAF_all_sites
-#colnames(PCaxis)
-PCaxis <- rename(PCaxis, Chr=chromo)
-colnames(PCaxis)
+#Venn diagram of overlap of contigs in all 3 tables
+venn_data <- list( 
+  TajimaD_Pi = theta2$Chr, 
+  PC1_outliers = outliers_PC1$Chr, 
+  PC2_outliers = outliers_PC2$Chr)
 
-#overlap of sites in both 
-common_IDs <- intersect(TDPi$Chr, PCaxis$Chr)
-head(common_IDs)
-
-
+ggVennDiagram(venn_data) + 
+  ggtitle("Overlap of Contigs with Selection Signatures")
   
-
 ```
 
