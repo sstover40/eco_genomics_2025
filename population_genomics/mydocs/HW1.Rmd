@@ -15,7 +15,7 @@ knitr::opts_knit$set(root.dir = "~/projects/eco_genomics_2025/population_genomic
 library(ggplot2)
 library(tidyverse)
 ```
-2.Nucleotide diversity: Tajima's D and Pi
+2.Using Nucleotide diversity to find selection signatures
 ```{r} 
 setwd("myresults/ANGSD/diversity")
 
@@ -39,47 +39,69 @@ theta2 = theta %>%
 
 #compare pi and thetaW together and look for deviation 
 
-ggplot(theta2, aes(x=tWsite, y=tPsite, color=Chr)) +
-  geom_point(
-    size = 0.75, 
-    shape = 1, 
-    show.legend = F) + 
-  geom_abline(
-    slope=1, 
-    intercept = 0,
-    lintetype = "dashed", 
-    color = "black") +
-  labs(
-    title = "Pairwise differences vs. segregating sites for population 2505", 
-    x = "ThetaW", 
-    y = "Theta Pi")
-
 #subsetting rows that are evidence of selective sweep
 theta2[which(theta2$Tajima < -1.5 & theta2$tPsite < 0.001),]
 
 summary(theta2)
 sum(theta2$nSites)
 
-#pulling out the extremes
-maxD = max(theta2$Tajima)
-BigD = theta2[which(theta2$Tajima==maxD),]
-BigD$Chr
-
-minD = min(theta2$Tajima)
-lilD = theta2[which(theta2$Tajima==minD),]
-lilD$Chr
 ```
 
 3. Using PCA to find selection signatures 
 ```{r}
+#load plotting libraries 
+library(tidyverse)
+library(ggplot2)
+library(ggpubr)
+library(qqman)
+
 setwd("myresults/ANGSD/PCA_ADMIX")
 
-COV <- as.matrix(read.table("RSBS_poly_K2.cov")) # read in the genetic covariance matrix
+#making the PCA with just the Red Spruce 
 
-PCA <- eigen(COV) # extract the principal components from the COV matrix
+allRScov <- as.matrix(read.table("allRS_poly_K3.cov"))
+
+allRSPCA <- eigen(allRScov)
+
+var <- round(allRSPCA$values/sum(allRSPCA$values),3)
+
+var[1:3]
+
+#Bring in the bam list files and extract sample name information. Line 40 is the data frame with the list of names. The last number is the number of samples (1-95)
+names <- read.table("allRS_bam.list")
+names <- unlist(strsplit(basename(as.character(names[,1])), split = ".sorted.rmdup.bam"))
+split = strsplit(names, "_")
+pops <- data.frame(names[1:95], do.call(rbind, split[1:95]))
+names(pops) = c("Ind", "Pop", "Row", "Col")
+
+s <- read.table("allRS_poly_K3.selection")
+
+# convert test statistic to p-value
+pval_PC1 <- as.data.frame(1-pchisq(s[,1],1))
+names(pval_PC1) = "p_PC1"
+
+pval_PC2 <- as.data.frame(1-pchisq(s[,2],1))
+names(pval_PC2) = "p_PC2"
+
+#read in the sites: data on the snp positions themselves. Pairs the site information with sites that were selected for analysis in the outlier test.
+
+PCAngsd_sites <- read.table("allRS_poly_K3.sites")
+MAF_all_sites <- read.table("/gpfs1/cl/ecogen/pbio6800/PopulationGenomics/ANGSD/allRS_poly.mafs.gz", header=T)
+
+pos_filtered <- cbind(MAF_all_sites,PCAngsd_sites)[which(PCAngsd_sites==1),]
+
+dim(pos_filtered)
+```
+4. comparing significant values of the PC axis with Tajima's D and Pi 
+```{r}
+#evidence of selective sweep (Taijima's D and Pi)
+TDPi=theta2
+colnames(TDPi)
+PCaxis=MAF_all_sites
+colnames(PCaxis)
 
 
-
+  
 
 ```
 

@@ -115,7 +115,7 @@ plot(-log10(pval_PC2$p_PC2), col="red", cex=0.8, xlab="Locus position", main="Se
 ```
 We can zoom in if there is something near a position: 
 ```{r}
-plot(-log10(pval$p_PC1[2e05:2.01e05]),
+plot(-log10(pval_PC1$p_PC1[2e05:2.01e05]),
   col=p_filtered$chromo, 
   xlab="Position", 
   ylab="-log10(p-value)", 
