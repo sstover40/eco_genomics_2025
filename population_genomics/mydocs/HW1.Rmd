@@ -43,10 +43,13 @@ theta2 = theta %>%
   arrange(Chr, WinCenter) %>%
   filter(Chr > 100)
 
-#compare pi and thetaW together and look for deviation 
-
 #subsetting rows that are evidence of selective sweep
-theta2[which(theta2$Tajima < -1.5 & theta2$tPsite < 0.001),]
+theta2 <- theta2[which(theta2$Tajima < -1.5 | theta2$tPsite < 0.001),]
+
+# Create labels for plotting (Where is the significance coming from?)
+theta2$sig_status <- ifelse((theta2$Tajima<-1.5) & (theta2$tPsite<cutoff), "Both",
+                       ifelse(theta2$Tajima<-1.5, "Tajima",
+                       ifelse(theta2$tPsite<0.001, "Pi", "None")))
 
 summary(theta2)
 sum(theta2$nSites)
@@ -141,16 +144,20 @@ venn_data <- list(
   "PC1 outliers" = outlier_contigs_PC1, 
   "PC2 outliers" = outlier_contigs_PC2)
 
-ggVennDiagram(venn_data, label_alpha = 0.5, label="count") +
-  scale_fill_viridis_c(option = "C") +
+venn <- ggVennDiagram(venn_data, label_alpha = 0.5) +
+  scale_fill_distiller(palette = "GnBu") +
   theme(
-    legend.position = "none",
-    venn.setLabel = element_text(size = 12, color = "black"),
-    plot.title = element_text(hjust = 0.5, size = 16, face = "bold")
+    legend.position = "right",
+    venn.setLabel = element_text(size = 10, color = "black"),
+    plot.title = element_text(hjust = 0.5, size = 10, face = "bold")
   )
+
+ggsave("~/projects/eco_genomics_2025/population_genomics/mydocs/venn.png", plot = venn, width = 6, height = 4, dpi = 300)
+
+
 ```
 
-5. determine areas of selection across the genome 
+5. Signatures of Selection at the SNP level 
 ```{r}
 #SNPS with Selection signatures
 
@@ -158,51 +165,44 @@ ggVennDiagram(venn_data, label_alpha = 0.5, label="count") +
 all_snps <- unique(rbind(outliers_PC1, outliers_PC2))
 
 # Create labels for plotting
-all_snps$SNP_status <- ifelse((all_snps$p_PC1<0.001) & (all_snps$p_PC2<0.001), "Both",
-                       ifelse(all_snps$p_PC1<0.001, "PC1_only",
-                       ifelse(all_snps$p_PC2<0.001, "PC2_only", "None")))
+all_snps$SNP_status <- ifelse((all_snps$p_PC1<cutoff) & (all_snps$p_PC2<cutoff), "Both",
+                       ifelse(all_snps$p_PC1<cutoff, "PC1_only",
+                       ifelse(all_snps$p_PC2<cutoff, "PC2_only", "None")))
 
 # Calculate -log10(p-value) from either axis (choose one for y-axis)
 all_snps$logp <- -log10(pmin(all_snps$p_PC1, all_snps$p_PC2, na.rm = TRUE))
 
-#-------Making Chr and SNP positions into Genomic Positions-------------------------------
+#-------Making Chr and SNP positions into Genomic Positions
 
-# 1. Make sure 'Chr' is in the correct order 
-all_snps <- all_snps %>%
-  mutate(Chr = factor(Chr, levels = unique(Chr)))
+#making sure the data frame and scaffolds are ordered properly 
+all_snpsOrdered <- all_snps %>% arrange(Chr, position)
+all_snpsOrdered$Chr <- factor(all_snpsOrdered$Chr, levels = unique(all_snpsOrdered$Chr))
 
-# 2. Calc max position for each chromosome
-chrom_sizes <- all_snps %>%
+# Step 1: Get scaffold offsets
+scaffold_offsets <- all_snpsOrdered %>%
   group_by(Chr) %>%
-  summarise(max_pos = max(position)) %>%
-  arrange(Chr)
+  summarise(max_bp = max(position)) %>%
+  mutate(offset = lag(cumsum(max_bp), default = 0))
 
-# 3. Calculate cumulative lengths
-chrom_sizes <- chrom_sizes %>%
-  mutate(cum_len = cumsum(lag(max_pos, default = 0)))
+# Step 2: Join offsets to main data
+allsnp_manhattan <- all_snpsOrdered %>%
+  left_join(scaffold_offsets, by = "Chr") %>%
+  mutate(genomic_pos = position + offset)
 
-# 4. Join cumulative lengths back to data
-all_snps <- all_snps %>%
-  left_join(chrom_sizes %>% select(Chr, cum_len), by = "Chr") %>%
-  mutate(genomic_pos = position + cum_len)
-#-----------------------------------------------------------------------------------------
+#----------------------------------------------------------
 
-#ordering the SNPs in "Both" last
-all_snps <- all_snps %>%
-  arrange(SNP_status != "Both")  # This puts "Both" rows at the end
-
-ggplot(all_snps, aes(x = genomic_pos, y = logp, color = SNP_status)) +
+SNP_Manhattan <- ggplot(allsnp_manhattan, aes(x = genomic_pos, y = logp, color = SNP_status)) +
   geom_point(alpha = 0.7) +
   scale_color_manual(values = c("PC1_only" = "blue", "PC2_only" = "black", "Both" = "red"),
-                     labels = c("PC1_only" = "PC1 only", "PC2_only" = "PC2 only", "Both" = "Both")) +
+                  labels = c("PC1_only" = "PC1 only", "PC2_only" = "PC2 only", "Both" = "Both")) +
   labs(x = "Genomic Position",
        y = "-log10(p-value)",
        color = "SNP Origin") +
-  
   theme_bw()
 
+ggsave("~/projects/eco_genomics_2025/population_genomics/mydocs/SNP_Manhattan.png", plot = SNP_Manhattan, width = 6, height = 4, dpi = 300)
 ```
-
+5. Signatures of Selection at the 
 ```{r}
 #areas of selection (including overlap with Tajima's D and Pi)
 
