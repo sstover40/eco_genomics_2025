@@ -95,6 +95,8 @@ theta2[which(theta2$Tajima < -1.5 & theta2$tPsite < 0.001),]
 
 summary(theta2)
 sum(theta2$nSites)
+sum(theta2$tPsite<0.001)
+sum(theta$Tajima<-1.5)
 ```
 
 Pulling out Extremes: 

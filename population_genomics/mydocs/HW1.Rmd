@@ -44,15 +44,15 @@ theta2 = theta %>%
   filter(Chr > 100)
 
 #subsetting rows that are evidence of selective sweep
-theta2 <- theta2[which(theta2$Tajima < -1.5 | theta2$tPsite < 0.001),]
+theta2_filt <- theta2[which(theta2$Tajima < -1.5 | theta2$tPsite < 0.001),]
 
 # Create labels for plotting (Where is the significance coming from?)
-theta2$sig_status <- ifelse((theta2$Tajima<-1.5) & (theta2$tPsite<cutoff), "Both",
-                       ifelse(theta2$Tajima<-1.5, "Tajima",
-                       ifelse(theta2$tPsite<0.001, "Pi", "None")))
+theta2_filt$sig_status <- ifelse((theta2_filt$Tajima<-1.5) & (theta2_filt$tPsite<cutoff), "Both",
+                       ifelse(theta2_filt$Tajima<-1.5, "Tajima",
+                       ifelse(theta2_filt$tPsite<0.001, "Pi", "None")))
 
-summary(theta2)
-sum(theta2$nSites)
+summary(theta2_filt)
+sum(theta2_filt$nSites)
 
 ```
 
@@ -130,29 +130,29 @@ length(outlier_contigs_PC2)
 4. comparing significant values of the PCA outlier contigs with Tajima's D and Pi 
 ```{r}
 #Checking colnames of tajima'sD and Pi (theta2 table) selection signatures
-colnames(theta2)
+colnames(theta2_filt)
 
 #need to rename Chromo to Chr in the PCA outliers table to be able to compare the 3 tables 
 #PC1
-outliers_PC1 <- rename(outliers_PC1, Chr=chromo)
+#outliers_PC1 <- rename(outliers_PC1, Chr=chromo)
 #PC2
-outliers_PC2 <- rename(outliers_PC2, Chr=chromo)
+#outliers_PC2 <- rename(outliers_PC2, Chr=chromo)
 
 ##OVERLAP OF CONTIGS WITH SELECTION SIGNTURES (Venn Diagram)
 venn_data <- list( 
-  "TajimaD and Pi" = theta2$Chr, 
+  "TajimaD and Pi" = theta2_filt$Chr, 
   "PC1 outliers" = outlier_contigs_PC1, 
   "PC2 outliers" = outlier_contigs_PC2)
 
-venn <- ggVennDiagram(venn_data, label_alpha = 0.5) +
+ggVennDiagram(venn_data, label_alpha = 0.5) +
   scale_fill_distiller(palette = "GnBu") +
   theme(
     legend.position = "right",
-    venn.setLabel = element_text(size = 10, color = "black"),
-    plot.title = element_text(hjust = 0.5, size = 10, face = "bold")
+    venn.setLabel = element_text(size = 20, color = "black"),
+    plot.title = element_text(hjust = 0.5, size = 28, face = "bold")
   )
 
-ggsave("~/projects/eco_genomics_2025/population_genomics/mydocs/venn.png", plot = venn, width = 6, height = 4, dpi = 300)
+#ggsave("~/projects/eco_genomics_2025/population_genomics/mydocs/venn.png", plot = venn, width = 6, height = 4, dpi = 300)
 
 
 ```
@@ -191,19 +191,67 @@ allsnp_manhattan <- all_snpsOrdered %>%
 
 #----------------------------------------------------------
 
-SNP_Manhattan <- ggplot(allsnp_manhattan, aes(x = genomic_pos, y = logp, color = SNP_status)) +
-  geom_point(alpha = 0.7) +
-  scale_color_manual(values = c("PC1_only" = "blue", "PC2_only" = "black", "Both" = "red"),
-                  labels = c("PC1_only" = "PC1 only", "PC2_only" = "PC2 only", "Both" = "Both")) +
-  labs(x = "Genomic Position",
-       y = "-log10(p-value)",
-       color = "SNP Origin") +
+#need to plot one at a time so that "Both" can be seen
+ggplot() +
+  # First: PC1_only (bottom layer, blue)
+  geom_point(data = allsnp_manhattan %>% filter(SNP_status == "PC1_only"),
+             aes(x = genomic_pos, y = logp),
+             color = "blue", alpha = 0.7, size = 2) +
+
+  # Second: PC2_only (middle layer, black)
+  geom_point(data = allsnp_manhattan %>% filter(SNP_status == "PC2_only"),
+             aes(x = genomic_pos, y = logp),
+             color = "black", alpha = 0.7, size = 2) +
+
+  # Third: Both (top layer, red)
+  geom_point(data = allsnp_manhattan %>% filter(SNP_status == "Both"),
+             aes(x = genomic_pos, y = logp),
+             color = "red", alpha = 0.9, size = 3) +
+
+  labs(x = "Genomic Position", y = "-log10(p-value)", color = "SNP Origin") +
   theme_bw()
 
-ggsave("~/projects/eco_genomics_2025/population_genomics/mydocs/SNP_Manhattan.png", plot = SNP_Manhattan, width = 6, height = 4, dpi = 300)
+#ggsave("~/projects/eco_genomics_2025/population_genomics/mydocs/SNP_Manhattan.png", plot = SNP_Manhattan, width = 6, height = 4, dpi = 300)
 ```
 5. Signatures of Selection at the 
 ```{r}
 #areas of selection (including overlap with Tajima's D and Pi)
+# Ensure Chr is a factor with scaffold order
+# Ensure Chr is a factor with scaffold order
+allsnp_manhattan$Chr <- factor(allsnp_manhattan$Chr, levels = unique(allsnp_manhattan$Chr))
+
+# Compute offsets for each scaffold
+scaffold_offsets <- allsnp_manhattan %>%
+  group_by(Chr) %>%
+  summarise(max_bp = max(position), .groups = "drop") %>%
+  mutate(offset = lag(cumsum(max_bp), default = 0))
+
+
+
+ggplot() +
+  geom_rect(data = selection_windows,
+            aes(xmin = genomic_start, xmax = genomic_end, ymin = -Inf, ymax = Inf),
+            fill = "violet", alpha = 0.3) +
+  
+  geom_point(data = allsnp_manhattan %>% filter(SNP_status == "PC1_only"),
+             aes(x = genomic_pos, y = logp),
+             color = "blue", size = 1, alpha = 0.7) +
+
+  geom_point(data = allsnp_manhattan %>% filter(SNP_status == "PC2_only"),
+             aes(x = genomic_pos, y = logp),
+             color = "black", size = 1, alpha = 0.7) +
+
+  geom_point(data = allsnp_manhattan %>% filter(SNP_status == "Both"),
+             aes(x = genomic_pos, y = logp),
+             color = "red", size = 1.5, alpha = 0.9) +
+
+  labs(
+    x = "Genomic Position",
+    y = "-log10(p-value)",
+    title = "PCA Outliers + Diversity-Based Selection Regions"
+  ) +
+  theme_bw()
+
+```
 
 
