@@ -148,8 +148,8 @@ ggVennDiagram(venn_data, label_alpha = 0.5) +
   scale_fill_distiller(palette = "GnBu") +
   theme(
     legend.position = "right",
-    venn.setLabel = element_text(size = 20, color = "black"),
-    plot.title = element_text(hjust = 0.5, size = 28, face = "bold")
+    venn.setLabel = element_text(size = 30, color = "black", face = "bold"),
+    plot.title = element_text(hjust = 0.5, size = 40, face = "bold")
   )
 
 #ggsave("~/projects/eco_genomics_2025/population_genomics/mydocs/venn.png", plot = venn, width = 6, height = 4, dpi = 300)
@@ -213,34 +213,47 @@ ggplot() +
 
 #ggsave("~/projects/eco_genomics_2025/population_genomics/mydocs/SNP_Manhattan.png", plot = SNP_Manhattan, width = 6, height = 4, dpi = 300)
 ```
-5. Signatures of Selection at the 
+5. Signatures of Selection  
 ```{r}
 #areas of selection (including overlap with Tajima's D and Pi)
-# Ensure Chr is a factor with scaffold order
-# Ensure Chr is a factor with scaffold order
-allsnp_manhattan$Chr <- factor(allsnp_manhattan$Chr, levels = unique(allsnp_manhattan$Chr))
 
-# Compute offsets for each scaffold
+# Ensure Chr is a factor with scaffold order
+#allsnp_manhattan$Chr <- factor(allsnp_manhattan$Chr, levels = unique(allsnp_manhattan$Chr))
+
+# 1. Compute scaffold offsets from SNP data
 scaffold_offsets <- allsnp_manhattan %>%
   group_by(Chr) %>%
   summarise(max_bp = max(position), .groups = "drop") %>%
   mutate(offset = lag(cumsum(max_bp), default = 0))
 
+# 2. Prepare selection windows from theta2_filt
+selection_windows <- theta2_filt %>%
+  # Make sure Chr is a factor with correct levels
+  mutate(
+    Chr = factor(Chr, levels = levels(allsnp_manhattan$Chr)),
+    win_start = WinCenter - 50000,
+    win_end = WinCenter + 50000
+  ) %>%
+  left_join(scaffold_offsets, by = "Chr") %>%
+  mutate(
+    genomic_start = win_start + offset,
+    genomic_end = win_end + offset
+  )
 
-
+# 3. Plotting
 ggplot() +
+  # Draw selection regions as transparent violet rectangles
   geom_rect(data = selection_windows,
             aes(xmin = genomic_start, xmax = genomic_end, ymin = -Inf, ymax = Inf),
             fill = "violet", alpha = 0.3) +
-  
+
+  # Plot PCA outliers
   geom_point(data = allsnp_manhattan %>% filter(SNP_status == "PC1_only"),
              aes(x = genomic_pos, y = logp),
              color = "blue", size = 1, alpha = 0.7) +
-
   geom_point(data = allsnp_manhattan %>% filter(SNP_status == "PC2_only"),
              aes(x = genomic_pos, y = logp),
              color = "black", size = 1, alpha = 0.7) +
-
   geom_point(data = allsnp_manhattan %>% filter(SNP_status == "Both"),
              aes(x = genomic_pos, y = logp),
              color = "red", size = 1.5, alpha = 0.9) +
