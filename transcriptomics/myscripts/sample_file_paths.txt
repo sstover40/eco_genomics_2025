@@ -1,0 +1,9 @@
+#directory in which the samples are located
+cd /gpfs1/cl/ecogen/pbio6800/Transcriptomics/transcripts_quant
+
+#makes a list of full path names for all sample files
+echo "sample,path" > /gpfs1/cl/ecogen/pbio6800/Transcriptomics/transcripts_quant/samples.csv
+for dir in */; do
+  sample_name=${dir%/}
+  echo "${sample_name},/gpfs1/cl/ecogen/pbio6800/Transcriptomics/transcripts_quant/${sample_name}" >> /gpfs1/s/s/sstover/projects/eco_genomics_2025/transcriptomics/mydata/samples.csv
+done

@@ -1,0 +1,183 @@
+---
+title: "DESeq2_tonsa_multigen"
+output: html_document
+date: "2025-10-14"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#to set our working dir
+knitr::opts_knit$set(root.dir = "/gpfs1/home/s/s/sstover/projects/eco_genomics_2025/transcriptomics/mydata")
+```
+
+```{r}
+## Import the libraries that we're likely to need in this session
+
+library(DESeq2)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(scales)
+library(ggpubr)
+library(vsn)  
+library("pheatmap")
+library("vsn")
+
+####################################################
+
+### Import our data
+
+####################################################
+```
+
+
+```{r}
+
+# Import the counts matrix
+countsTable <- read.table("counts_matrix.txt", header=TRUE, row.names=1)
+head(countsTable)
+dim(countsTable)
+```
+
+```{r}
+countsTableRound <- round(countsTable) # bc DESeq2 doesn't like decimals (and Salmon outputs data with decimals)
+head(countsTableRound)
+```
+
+```{r}
+#import the sample description table
+conds <- read.delim("metadata.txt", header=TRUE, stringsAsFactors = TRUE, row.names=1)
+head(conds)
+```
+Explore patterns in the data - evenness among samples…
+
+```{r}
+####################################################
+
+### Explore data distributions
+
+####################################################
+
+# Let's see how many reads we have from each sample
+colSums(countsTableRound)
+```
+
+```{r}
+mean(colSums(countsTableRound))
+```
+looks like its a little below the general rule of thumb: want about 20 million reads per sample but we only have 12 million on ave.
+
+```{r}
+barplot(colSums(countsTableRound), names.arg=colnames(countsTableRound),cex.names=0.5, las=3,ylim=c(0, 19000000)) #change dims
+abline(h=mean(colSums(countsTableRound)), col="blue", lwd=2)
+```
+
+```{r}
+# the average number of counts per gene
+head(rowSums(countsTableRound))
+```
+
+```{r}
+mean(rowSums(countsTableRound)) # 
+```
+despite lots of 0s across the 119000 transcripts, we still have an ave of 2500 reads mapping per transcript
+
+```{r}
+median(rowSums(countsTableRound)) #
+```
+
+A bar graph to show the size distribution of the reads, play around with the axis limits to get a good sense of your sequence data 
+```{r}
+apply(countsTableRound,2,mean) # 2 in the apply function does the action across columns
+apply(countsTableRound,1,mean) # 1 in the apply function does the action across rows
+hist(apply(countsTableRound,1,mean), xlim=c(0,10000), ylim=c(0,60000),breaks=10000) #breaks is how many different bins you have 
+
+```
+Define our model and create a DESeq2 object
+```{r}
+####################################################
+
+### Start working with DESeq2!
+
+####################################################
+
+#### Create a DESeq object and define the experimental design here with the tilda
+
+#corrects the column names to match btwn the metadata table and the counts matrix 
+colnames(countsTableRound) <- substr(colnames(countsTableRound), start=1, stop=4)
+
+dds <- DESeqDataSetFromMatrix(countData = countsTableRound, colData=conds, 
+                              design= ~ generation + line)
+
+dim(dds)
+
+# Filter out genes with too few reads - remove all genes with counts < 15 in more than 75% of 24 samples, so 18)
+## suggested by WGCNA on RNAseq FAQ
+
+dds <- dds[rowSums(counts(dds) >= 15) >= 18,]
+nrow(dds) 
+
+# How many transcripts have at least 15 reads (a.k.a counts) in 75% of the samples
+
+# Run the DESeq model to test for differential gene expression
+dds <- DESeq(dds)
+
+# List the results you've generated
+resultsNames(dds)
+# Copy the results names 
+```
+Let’s make a PCA plot to visualize gene expression variation among samples. What patterns do we expect a priori?
+```{r}
+####################################################
+
+### Check the quality of the data by sample clustering and visualization
+
+####################################################
+
+# The goal of transformation "is to remove the dependence of the variance on the mean, particularly the high variance of the logarithm of count data when the mean is low."
+
+library("pheatmap")
+library("vsn")
+
+# this gives log2(n + 1)
+ntd <- normTransform(dds)
+meanSdPlot(assay(ntd))
+
+# Variance stabilizing transformation
+vsd <- vst(dds, blind=FALSE)
+meanSdPlot(assay(vsd))
+
+
+sampleDists <- dist(t(assay(vsd)))
+
+library("RColorBrewer")
+sampleDistMatrix <- as.matrix(sampleDists)
+rownames(sampleDistMatrix) <- paste(vsd$line, vsd$generation, sep="-")
+colnames(sampleDistMatrix) <- NULL
+colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+pheatmap(sampleDistMatrix,
+         clustering_distance_rows=sampleDists,
+         clustering_distance_cols=sampleDists,
+         col=colors)
+
+# Note any outliers
+
+###############################################################
+
+# PCA to visualize global gene expression patterns
+
+# first transform the data for plotting using variance stabilization
+vsd <- vst(dds, blind=FALSE)
+
+pcaData <- plotPCA(vsd, intgroup=c("line","generation"), returnData=TRUE)
+percentVar <- round(100 * attr(pcaData,"percentVar"))
+
+ggplot(pcaData, aes(PC1, PC2, color=line, shape=generation)) +
+  geom_point(size=3) +
+  xlab(paste0("PC1: ",percentVar[1],"% variance")) +
+  ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
+  coord_fixed()
+```
+From here we can play around with colors and shapes to optomize the data visualization.
+
+How else do we want to visualize the data and test hypotheses?
