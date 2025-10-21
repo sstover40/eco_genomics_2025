@@ -66,4 +66,6 @@ We also made a counts_matrix to import into DESeq:
 
 # DESeq2 start of our data analysis! 
 
+###10/21/23
+
 

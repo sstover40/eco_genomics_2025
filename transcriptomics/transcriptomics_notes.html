@@ -368,16 +368,51 @@ display: none;
 zcat <filename> | head -n 4 we could look at the first 4 lines of the
 file congrats! Everything looks good. moving on..</p>
 </div>
-<div id="trimming-and-visualizing-reads" class="section level3">
-<h3>10/09/25: trimming and visualizing reads</h3>
+<div id="trimming-and-visualizing-reads-mapping" class="section level3">
+<h3>10/09/25: trimming and visualizing reads, mapping</h3>
 <p>last week we did not have time to run our cleaning and trimming reads
-script but this week we did have more time. So we ran “bash” (&lt;–since
-its not a batch job)</p>
-<ul>
-<li><code>/users/s/s/sstover/projects/eco_genomics_2025/transcriptomics/myscripts/fastp_tonsa.sh</code></li>
-</ul>
+script due to file recognition issues. but this week we did have more
+time. So we ran “bash”(&lt;–since its not a batch job)</p>
+<p>-<code>/users/s/s/sstover/projects/eco_genomics_2025/transcriptomics/myscripts/fastp_tonsa.sh</code></p>
+<p>side note: to create a global alias (permanent) go to your .bashrc
+file in the home directory ll -a ~/ nano .bashrc
+<name>=alias”command”</p>
+<p>also ran salmon but nicole got there before me! Salmon makes K-mers
+Salmon does not consider length so as long as it is longer than the
+K-mer length it will try to map the reads</p>
+<p>there are two thoughts: usually some people do not want to touch the
+primer reads or filter too much in case there are splice variants etc
+other people want to do the opposite</p>
+<p>###10/14/25: Exploring mapping rate and importing it inot DEseq</p>
+<p>we cd into
+<code>/gpfs1/cl/ecogen/pbio6800/Transcriptomics/Transcripts_quant</code>
+to look at the size and quantity of the transcripts
+<code>head quant.sf</code></p>
+<p>wc -l was about 119436 meaning that is the amount of transcripts that
+we have. we want to make sure the mapping rate is also ok across all
+samples: <code>grep -r --include \*.log -e &#39;Mapping rate&#39;</code> or
+<code>grep -r --include &quot;*.log&quot; -e &quot;Mapping rate&quot; | sed -E &#39;s|/logs/.*:.*Mapping rate = ([0-9.]+)%|\t\1|&#39;</code></p>
+<p>this gave us a list of all the samples and their mapping rate. the
+mapping rate for all the samples was around 40% which is low. typically
+you want to have a mapping rate of 80% or greater. We discussed factors
+that could affect the mapping rate * contamination of reads from other
+taxa (Bacterial, human, algae) these would not map to the reference *
+low RNA quality or low RNA yield since the library prep was ultra-low
+RNA * could try with a head crop to get rid of primer reads, these may
+affect the mapping rate * could also do a new de novo assembly from
+these reads (would need to annotate them)</p>
+<p>We made a list of sample files with their full path names: cd
+/gpfs1/cl/ecogen/pbio6800/Transcriptomics/transcripts_quant</p>
+<p><code>echo &quot;sample,path&quot; &gt; /gpfs1/cl/ecogen/pbio6800/Transcriptomics/transcripts_quant/samples.csv for dir in */; do   sample_name=${dir%/}   echo &quot;${sample_name},/gpfs1/cl/ecogen/pbio6800/Transcriptomics/transcripts_quant/${sample_name}&quot; &gt;&gt; /gpfs1/cl/ecogen/pbio6800/Transcriptomics/transcripts_quant/samples.csv done</code></p>
+<p>Here is the <a href="file:%60/gpfs1/s/s/sstover/projects/eco_genomics_2025/transcriptomics/mydata/samples.csv" class="uri">file:`/gpfs1/s/s/sstover/projects/eco_genomics_2025/transcriptomics/mydata/samples.csv</a>`</p>
+<p>We also made a counts_matrix to import into DESeq:
+*<code>/gpfs1/s/s/sstover/projects/eco_genomics_2025/transcriptomics/myscripts/create_counts_matrix.r</code></p>
 </div>
 </div>
+</div>
+<div id="deseq2-start-of-our-data-analysis" class="section level1">
+<h1>DESeq2 start of our data analysis!</h1>
+<p>###10/21/23</p>
 </div>
 
 
