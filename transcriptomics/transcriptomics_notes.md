@@ -66,6 +66,35 @@ We also made a counts_matrix to import into DESeq:
 
 # DESeq2 start of our data analysis! 
 
-###10/21/23
+###10/21/23 Import to DESeq2 and visualize (https://pespenilab.github.io/Ecological-Genomics/Fall2025/tutorials/EcoGen2025_Transcriptomics4_GeneExpressionAnalysis.html)
 
+In today's class, we continued visualizing the dataset by making an MA plot, volcano plot, several heatmaps, and a Venn Diagram which are outlined in the RMarkdown file 
+*`/gpfs1/s/s/sstover/projects/eco_genomics_2025/transcriptomics/mydocs/DEseq2_tonsa_multigen.Rmd.` 
+Each plot is meant to show us the following:
+
+-   MA plot - Plotting the relationship between LFC and magnitude of expression.
+
+-   Volcano plot - Plotting the relationship between LFC and significance of DGE in Generation 1, comparing control and treatment.
+
+-   Heatmaps - Plotting relative expression on gene and sample level
+
+    -   Heatmap 1: Plotting top 20 genes sorted by p-value.
+
+    -   Heatmap 2: Plotting LFC and G1 significant genes and how they change across generations.
+
+    -   Heatmap 3: Plotting LFC and G2 significant genes and how they change across generations.
+
+-   Venn Diagram - Plotting overlap between genes differentially expressed between treatments across generations.
+
+####10/23/25 - Functional enrichment analysis (https://pespenilab.github.io/Ecological-Genomics/Fall2025/tutorials/EcoGen2025_Transcriptomics5_FunctionalEnrichment.html)
+
+Today, we began to run a Gene Ontology (GO) analysis and look for functional enrichment with various statistical tests. To do this we used TopGO 
+
+We created a new RMarkdown file that took our DESeq outputs and put them in the proper format for analysis as well as got GO terms for our genes 
+*`/gpfs1/s/s/sstover/projects/eco_genomics_2025/transcriptomics/mydata/Genes_GO_terms_outputs.tsv`
+*`/gpfs1/s/s/sstover/projects/eco_genomics_2025/transcriptomics/mydata/topGOsig_for_REVIGO.txt`
+
+First, we began by visualizing our data using several different plot types in this file: 
+*`/gpfs1/s/s/sstover/projects/eco_genomics_2025/transcriptomics/mydocs/DESeq2ToTopGo.Rmd`
+we created a topGO plot and REVIGO plot.
 
