@@ -98,3 +98,4 @@ First, we began by visualizing our data using several different plot types in th
 *`/gpfs1/s/s/sstover/projects/eco_genomics_2025/transcriptomics/mydocs/DESeq2ToTopGo.Rmd`
 we created a topGO plot and REVIGO plot.
 
+
