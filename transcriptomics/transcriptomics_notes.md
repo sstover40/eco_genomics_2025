@@ -32,7 +32,7 @@ Salmon does not consider length so as long as it is longer than the K-mer length
 there are two thoughts: usually some people do not want to touch the primer reads or filter too much in case there are splice variants etc 
 other people want to do the opposite 
 
-###10/14/25: Exploring mapping rate and importing it inot DEseq
+###10/14/25: Exploring mapping rate and importing it into DEseq
 
 we cd into `/gpfs1/cl/ecogen/pbio6800/Transcriptomics/Transcripts_quant` to look at the size and quantity of the transcripts 
 `head quant.sf`
@@ -97,5 +97,27 @@ We created a new RMarkdown file that took our DESeq outputs and put them in the 
 First, we began by visualizing our data using several different plot types in this file: 
 *`/gpfs1/s/s/sstover/projects/eco_genomics_2025/transcriptomics/mydocs/DESeq2ToTopGo.Rmd`
 we created a topGO plot and REVIGO plot.
+
+###10/28/25 WGCNA (Weighted Gene Correlation Network Analysis)
+
+today we are doing our WGCNA to look at functional enrichment and figure out what networks of genes may be involved in the phenotype we are
+interested in. In this case it was ULT (Upper lethal temp) 
+
+We created a new markdown file do do the WGCNA analysis
+*`/gpfs1/s/s/sstover/projects/eco_genomics_2025/transcriptomics/mydocs/DESeq2toWGCNA.Rmd`
+
+copied the WCGNA trait data from the class netfile and put it in the mydata folder 
+*`/gpfs1/s/s/sstover/projects/eco_genomics_2025/transcriptomics/mydata/WGCNA_TraitData.csv`
+
+We filtered our DESeq2 data 
+calculated pairwise correlations (differential expression of every gene against every gene)
+created an adjacency matrix that quantified these correlations and then chose a soft-threshold power by visualizing...  (I used 24)
+Made a scale-free topology index - this measured the relationships of the genes in the network 
+detected modules using our soft-threshold power - this calculated eigengene values for our networks (I had 18 modules)
+Tested for correlation with trait data (highest correlation was MEsalmon at 0.48) then visualized the 
+
+
+
+
 
 
