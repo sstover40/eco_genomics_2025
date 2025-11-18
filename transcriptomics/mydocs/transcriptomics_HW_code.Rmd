@@ -23,6 +23,7 @@ library(ggpubr)
 library(vsn)  
 library("pheatmap")
 library("vsn")
+library(UpSetR)
 
 ####################################################
 
@@ -347,10 +348,12 @@ ggplot() +
   theme(axis.text.x = element_text(angle=45, hjust=1))
 
 ```
-G2 and G4 have very little difference in DEGs but G3 and G4 are less similar - what is going on in G3????? 
+G2 and G4 have very little difference in DEGs but G3 and G4 are less similar - what is going on in G3? 
 G1 and G4 have the most DEGs (expected)
 G1vG2 and G1vG3 are similar in # of DEGs 
 G2vG3 and G3vG4 are also around the same 
+
+would need statistical analysis to determine if this is significant or not. Permutations? 
 
 
 ###--> Compare Enrichment in G1v4,G2v4,G3v4
@@ -641,11 +644,12 @@ plotG3v4 <- TopGO_plot(filtered_GO_resultsG3v4, "G3 vs G4")
 combined_plot <- (plotG1v4 | plotG2v4 | plotG3v4) + plot_layout(guides = "collect")
 combined_plot
 ```
-
-output the enrichment results from TopGO and try REViGO like what was used in the paper we discuss in class today.
+Can we output the enrichment results from TopGO and try REViGO like what was used in the paper we discuss in class today.
 ```{r}
 # Select only the columns REVIGO needs
-revigo_input <- filtered_GO_results[, c("GO.ID", "classicFisher")] #this table will be used to filter 
+revigo_inputG1v4 <- filtered_GO_resultsG1v4[, c("GO.ID", "classicFisher")] #this table will be used to filter
+revigo_inputG2v4 <- filtered_GO_resultsG2v4[, c("GO.ID", "classicFisher")]
+revigo_inputG3v4 <- filtered_GO_resultsG3v4[, c("GO.ID", "classicFisher")]
 
 sigRes <- revigo_input[as.numeric(revigo_input$classicFisher) < 0.05, ]
 
@@ -654,6 +658,12 @@ colnames(sigRes) <- c("GO.ID", "pValue")
 
 # Save as txt to upload to REVIGO
 write.table(sigRes, file = "topGOsig_for_REVIGO.txt", sep = "\t", row.names = FALSE, quote = FALSE)
+```
+
+
+Making an Upset Plot with the comparisons between generations
+```{r}
+
 ```
 
 
