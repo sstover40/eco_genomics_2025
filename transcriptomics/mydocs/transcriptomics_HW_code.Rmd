@@ -640,11 +640,16 @@ plotG1v4 <- TopGO_plot(filtered_GO_resultsG1v4, "G1 vs G4")
 plotG2v4 <- TopGO_plot(filtered_GO_resultsG2v4, "G2 vs G4")
 plotG3v4 <- TopGO_plot(filtered_GO_resultsG3v4, "G3 vs G4")
 
+plotG1v4
+plotG2v4
+plotG3v4
+
+# RAN INTO ISSUES WITH THE SCALES
 # Combine into 3-panel figure
-combined_plot <- (plotG1v4 | plotG2v4 | plotG3v4) + plot_layout(guides = "collect")
-combined_plot
+#combined_plot <- (plotG1v4 | plotG2v4 | plotG3v4) + plot_layout(guides = "collect")
+#combined_plot
 ```
-Can we output the enrichment results from TopGO and try REViGO like what was used in the paper we discuss in class today.
+Can we output the enrichment results from TopGO and try REViGO 
 ```{r}
 # Select only the columns REVIGO needs
 revigo_inputG1v4 <- filtered_GO_resultsG1v4[, c("GO.ID", "classicFisher")] #this table will be used to filter
@@ -666,7 +671,247 @@ Making an Upset Plot with the comparisons between generations
 
 ```
 
+Testing DEG between control generations: 
+PCA plot to visualize gene expression variation among treatment Generations
+```{r}
+####################################################
 
+### Check the quality of the data by sample clustering and visualization
+
+####################################################
+
+# The goal of transformation "is to remove the dependence of the variance on the mean, particularly the high variance of the logarithm of count data when the mean is low."
+
+library("pheatmap")
+library("vsn")
+
+# this gives log2(n + 1)
+ntd <- normTransform(dds)
+meanSdPlot(assay(ntd))
+
+# Variance stabilizing transformation
+vsd <- vst(dds, blind=FALSE)
+meanSdPlot(assay(vsd))
+
+
+sampleDists <- dist(t(assay(vsd)))
+
+library("RColorBrewer")
+sampleDistMatrix <- as.matrix(sampleDists)
+rownames(sampleDistMatrix) <- paste(vsd$line, vsd$generation, sep="-")
+colnames(sampleDistMatrix) <- NULL
+colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+pheatmap(sampleDistMatrix,
+         clustering_distance_rows=sampleDists,
+         clustering_distance_cols=sampleDists,
+         col=colors)
+
+# Note any outliers
+
+###############################################################
+
+# PCA to visualize global gene expression patterns
+
+# first transform the data for plotting using variance stabilization
+vsd <- vst(dds, blind=FALSE)
+
+pcaData <- plotPCA(vsd, intgroup=c("line","generation"), returnData=TRUE)
+percentVar <- round(100 * attr(pcaData,"percentVar"))
+
+#filtering for just treatment 
+pcaData_filt <- pcaData %>%
+  filter(line == "control")
+
+ggplot(pcaData_filt, aes(PC1, PC2)) +
+  geom_point(size=5, stroke = 1, aes(fill=line, shape=generation, alpha = generation)) +
+  xlab(paste0("PC1: ",percentVar[1],"% variance")) +
+  ylab(paste0("PC2: ",percentVar[2],"% variance")) +
+  scale_shape_manual(values=c(21,22,23,24), labels = c("G1", "G2","G3", "G4"))+
+  #scale_shape_manual(values=c(21,22,23,24) -> circle, square, diamond, triangle
+  scale_fill_manual(values=c('#6699CC', "#CC3333"), labels = c("Control", "Treatment"))+
+  scale_alpha_manual(values = c(1.0, 0.8, 0.7, 0.3), guide = "none") +
+  theme_bw() +
+  theme(legend.position = "none") +
+  theme(panel.border = element_rect(color = "black", fill = NA, size = 3))+
+  theme(text = element_text(size = 20)) +
+  theme(legend.title = element_blank())
+```
+looks like most of the variance (PC1) is between G1, G2 and the other generations. PC2 seems to vary between replicates but there may be a slight pattern of G1 and G2 being more spread out while G3 and G4 cluster....
+
+
+```{r}
+dds$line <- relevel(dds$line, ref = "control")
+dds$generation <- relevel(dds$generation, ref = "G1")
+
+
+dds$group <- factor(paste0(dds$line, dds$generation))
+design(dds) <- ~ group
+dds <- DESeq(dds)
+resultsNames(dds)
+```
+
+
+Compare each generation to every other generation for treatment
+1. G1 and G2 
+```{r}
+#comparison
+resC_G1v2 <- results(dds, contrast=c("group","controlG1","controlG2"), alpha = 0.05) #alpha = significance value 
+
+summary(resC_G1v2)
+
+#differentiate up reg and down reg DEGs
+up_G1v2 <- sum(resC_G1v2$padj < 0.05 & resC_G1v2$log2FoldChange > 0, na.rm=TRUE)
+down_G1v2 <- sum(resC_G1v2$padj < 0.05 & resC_G1v2$log2FoldChange < 0, na.rm=TRUE)
+```
+2. G1 and G3
+```{r}
+resC_G1v3 <- results(dds, contrast=c("group","controlG1","controlG3"), alpha = 0.05) #alpha = significance value 
+
+summary(resC_G1v3)
+
+#differentiate up reg and down reg DEGs
+up_G1v3 <- sum(resC_G1v3$padj < 0.05 & resC_G1v3$log2FoldChange > 0, na.rm=TRUE)
+down_G1v3 <- sum(resC_G1v3$padj < 0.05 & resC_G1v3$log2FoldChange < 0, na.rm=TRUE)
+```
+3. G1 and G4
+```{r}
+resC_G1v4 <- results(dds, contrast=c("group","controlG1","controlG4"), alpha = 0.05) #alpha = significance value 
+
+summary(resC_G1v4)
+
+#differentiate up reg and down reg DEGs
+up_G1v4 <- sum(resC_G1v4$padj < 0.05 & resC_G1v4$log2FoldChange > 0, na.rm=TRUE)
+down_G1v4 <- sum(resC_G1v4$padj < 0.05 & resC_G1v4$log2FoldChange < 0, na.rm=TRUE)
+```
+4. G2 and G3
+```{r}
+resC_G2v3 <- results(dds, contrast=c("group","controlG2","controlG3"), alpha = 0.05) #alpha = significance value 
+
+summary(resC_G2v3)
+
+#differentiate up reg and down reg DEGs
+up_G2v3 <- sum(resC_G2v3$padj < 0.05 & resC_G2v3$log2FoldChange > 0, na.rm=TRUE)
+down_G2v3 <- sum(resC_G2v3$padj < 0.05 & resC_G2v3$log2FoldChange < 0, na.rm=TRUE)
+```
+5. G2 and G4
+```{r}
+resC_G2v4 <- results(dds, contrast=c("group","controlG2","controlG4"), alpha = 0.05) #alpha = significance value 
+
+summary(resC_G2v4)
+
+#differentiate up reg and down reg DEGs
+up_G2v4 <- sum(resC_G2v4$padj < 0.05 & resC_G2v4$log2FoldChange > 0, na.rm=TRUE)
+down_G2v4 <- sum(resC_G2v4$padj < 0.05 & resC_G2v4$log2FoldChange < 0, na.rm=TRUE)
+```
+6. G3 and G4 
+```{r}
+resC_G3v4 <- results(dds, contrast=c("group","controlG3","controlG4"), alpha = 0.05) #alpha = significance value 
+
+summary(resC_G3v4)
+
+#differentiate up reg and down reg DEGs
+up_G3v4 <- sum(resC_G3v4$padj < 0.05 & resC_G3v4$log2FoldChange > 0, na.rm=TRUE)
+down_G3v4 <- sum(resC_G3v4$padj < 0.05 & resC_G3v4$log2FoldChange < 0, na.rm=TRUE)
+```
+
+Make a heatmap of G1 vs G2 sig genes and how they change across generations
+
+Question: How does gene expression change across generations for the genes that are differentially expressed from G1 to G2
+```{r}
+sig_genes_G1v2 <- rownames(resC_G1v2[which(resC_G1v2$padj < 0.05 & !is.na(resC_G1v2$padj)), ])
+
+# Combine into a data frame
+lfc_mat <- data.frame(
+  Gen1v2 = resC_G1v2[sig_genes_G1v2, "log2FoldChange"],
+  Gen1v3 = resC_G1v3[sig_genes_G1v2, "log2FoldChange"],
+  Gen1v4 = resC_G1v4[sig_genes_G1v2, "log2FoldChange"]
+#  Gen4 = resG4_CvT[sig_genes_G1, "log2FoldChange"]
+)
+
+# Remove any rows with missing values (some genes may not be in all result tables, will mess with values)
+lfc_mat <- na.omit(lfc_mat)
+
+pheatmap(lfc_mat,
+         scale = "row",             # scales each gene’s LFCs across generations
+         color = colorRampPalette(c("blue", "white", "red"))(50),
+         clustering_distance_rows = "euclidean",
+         clustering_distance_cols = "euclidean",
+         clustering_method = "complete",
+         show_rownames = FALSE,
+         main = "LFC of Sig Genes in Gen 1 across Generations")
+
+```
+G2 and G4 group together here...
+
+Heat map exploring DEGs between all generations
+```{r}
+
+#data frame to store up and down DEGs for each comparison 
+deg_summary <- data.frame(
+  comparison = c("G1vG2","G1vG3","G1vG4","G2vG3","G2vG4","G3vG4"),
+  up = c(up_G1v2, up_G1v3, up_G1v4, up_G2v3, up_G2v4, up_G3v4),
+  down = c(down_G1v2, down_G1v3, down_G1v4, down_G2v3, down_G2v4, down_G3v4)
+)
+
+#making a matrix for up and down counts 
+gens <- c("G1","G2","G3","G4")
+up_mat <- matrix(0, nrow=4, ncol=4, dimnames=list(gens, gens))
+down_mat <- matrix(0, nrow=4, ncol=4, dimnames=list(gens, gens))
+
+#filling in the matrix:
+up_mat["G1","G2"] <- up_G1v2
+up_mat["G1","G3"] <- up_G1v3
+up_mat["G1","G4"] <- up_G1v4
+up_mat["G2","G3"] <- up_G2v3
+up_mat["G2","G4"] <- up_G2v4
+up_mat["G3","G4"] <- up_G3v4
+
+#downregulated matrix on the opposite triangle
+down_mat["G2","G1"] <- down_G1v2
+down_mat["G3","G1"] <- down_G1v3
+down_mat["G4","G1"] <- down_G1v4
+down_mat["G3","G2"] <- down_G2v3
+down_mat["G4","G2"] <- down_G2v4
+down_mat["G4","G3"] <- down_G3v4
+
+
+# Convert matrices to data frames and rename count column
+up_df <- as.data.frame(as.table(up_mat))
+colnames(up_df)[3] <- "value"
+down_df <- as.data.frame(as.table(down_mat))
+colnames(down_df)[3] <- "value"
+
+# Define generation order
+gens <- c("G1","G2","G3","G4")
+
+# Set factor levels for x and y axes
+up_df$Var1 <- factor(up_df$Var1, levels = gens)
+up_df$Var2 <- factor(up_df$Var2, levels = rev(gens))  # reverse for top-to-bottom y-axis
+down_df$Var1 <- factor(down_df$Var1, levels = gens)
+down_df$Var2 <- factor(down_df$Var2, levels = rev(gens))
+
+# Filter upper and lower triangle, exclude diagonal
+up_tile <- up_df %>% filter(as.numeric(Var1) < (length(gens)+1 - as.numeric(Var2)))   # upper triangle
+down_tile <- down_df %>% filter(as.numeric(Var1) > (length(gens)+1 - as.numeric(Var2))) # lower triangle
+
+# Plot heatmap
+ggplot() +
+  # Upper triangle = upregulated
+  geom_tile(data = up_tile, aes(x=Var1, y=Var2, fill=value), color="white") +
+  # Lower triangle = downregulated
+  geom_tile(data = down_tile, aes(x=Var1, y=Var2, fill=-value), color="white") +
+  # Fill gradient: blue = down, white = 0, red = up
+  scale_fill_gradient2(low = "blue", mid = "white", high = "red", midpoint = 0, name="DEG count") +
+  # Add count labels
+  geom_text(data = up_tile, aes(x=Var1, y=Var2, label=value), color="black", size=4) +
+  geom_text(data = down_tile, aes(x=Var1, y=Var2, label=value), color="black", size=4) +
+  # Theme
+  theme_minimal() +
+  coord_fixed() +
+  labs(x="Generation", y="Generation") +
+  theme(axis.text.x = element_text(angle=45, hjust=1))
+
+```
 
 
 
